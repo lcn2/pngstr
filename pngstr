@@ -4,8 +4,8 @@
 #
 # This example writes the UTC date string in a file called date.png.
 #
-# @(#) $Revision: 1.1 $
-# @(#) $Id: pngstr,v 1.1 2004/01/23 03:12:52 chongo Exp chongo $
+# @(#) $Revision: 1.2 $
+# @(#) $Id: pngstr,v 1.2 2004/02/09 03:08:01 chongo Exp chongo $
 # @(#) $Source: /usr/local/src/cmd/pngstr/RCS/pngstr,v $
 #
 # Copyright (c) 2003 by Landon Curt Noll.  All Rights Reserved.
@@ -35,13 +35,14 @@
 # requirements
 #
 use strict;
+use bytes;
 use Image::Magick;
 use Getopt::Long;
 use vars qw($opt_v $opt_o $opt_f $opt_b $opt_w $opt_h);
 
 # version - RCS style *and* usable by MakeMaker
 #
-my $VERSION = substr q$Revision: 1.1 $, 10;
+my $VERSION = substr q$Revision: 1.2 $, 10;
 $VERSION =~ s/\s+$//;
 
 # usage and help
