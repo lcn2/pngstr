@@ -5,8 +5,8 @@
 # This example writes the UTC date string in a file called date.png.
 #
 # @(#) $Revision: 1.1 $
-# @(#) $Id: image_magick_arg.pl,v 1.1 2004/01/23 02:39:49 chongo Exp $
-# @(#) $Source: /home/chongo/bench/sample/RCS/image_magick_arg.pl,v $
+# @(#) $Id: pngstr,v 1.1 2004/01/23 03:12:52 chongo Exp chongo $
+# @(#) $Source: /usr/local/src/cmd/pngstr/RCS/pngstr,v $
 #
 # Copyright (c) 2003 by Landon Curt Noll.  All Rights Reserved.
 #
@@ -54,7 +54,7 @@ my $help = qq{$usage
 	-o output.png	output filename (default: output.png)
 	-f fg_color	foreground / text color (default: black)
 	-b bg_color	background color (default: white)
-	-w width	image width in pixels (default: 6 + length(text)*9)
+	-w width	image width in pixels (default: length(text)*9)
 	-h height	image height in pixels (default: 12)
 };
 my %optctl = (
@@ -94,7 +94,7 @@ MAIN: {
     }
     $text = $ARGV[0];
     if (! defined $opt_w) {
-    	$opt_w = 6 + length($text)*9;
+    	$opt_w = length($text)*9;
     }
 
     # create the image in memory, filled with black pixels
