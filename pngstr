@@ -1,0 +1,129 @@
+#!/usr/bin/perl -wT
+#
+# pngstr - turn an string into a PNG image
+#
+# This example writes the UTC date string in a file called date.png.
+#
+# @(#) $Revision: 1.1 $
+# @(#) $Id: image_magick_arg.pl,v 1.1 2004/01/23 02:39:49 chongo Exp $
+# @(#) $Source: /home/chongo/bench/sample/RCS/image_magick_arg.pl,v $
+#
+# Copyright (c) 2003 by Landon Curt Noll.  All Rights Reserved.
+#
+# Permission to use, copy, modify, and distribute this software and
+# its documentation for any purpose and without fee is hereby granted,
+# provided that the above copyright, this permission notice and text
+# this comment, and the disclaimer below appear in all of the following:
+#
+#       supporting documentation
+#       source copies
+#       source works derived from this source
+#       binaries derived from this source or from derived source
+#
+# LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
+# EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+# PERFORMANCE OF THIS SOFTWARE.
+#
+# chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
+# Share and enjoy! :-)
+
+# requirements
+#
+use strict;
+use Image::Magick;
+use Getopt::Long;
+use vars qw($opt_v $opt_o $opt_f $opt_b $opt_w $opt_h);
+
+# version - RCS style *and* usable by MakeMaker
+#
+my $VERSION = substr q$Revision: 1.1 $, 10;
+$VERSION =~ s/\s+$//;
+
+# usage and help
+#
+my $usage = "$0 [-v lvl] [-o output.png] [-fg fg_color] [-b bg_color]\n" .
+	    "\t[-w width] text";
+my $help = qq{$usage
+
+	-v lvl		verbose / debug level
+	-o output.png	output filename (default: output.png)
+	-f fg_color	foreground / text color (default: black)
+	-b bg_color	background color (default: white)
+	-w width	image width in pixels (default: 6 + length(text)*9)
+	-h height	image height in pixels (default: 12)
+};
+my %optctl = (
+    "v=i" => \$opt_v,
+    "o=s" => \$opt_o,
+    "f=s" => \$opt_f,
+    "b=s" => \$opt_b,
+    "w=i" => \$opt_w,
+    "h=i" => \$opt_h,
+);
+
+# setup
+#
+MAIN: {
+    my $image;		# Image::Magick object
+    my $text;		# text string to write
+    my $ret;		# image magic return value
+
+    # setup
+    #
+    select(STDOUT);
+    $| = 1;
+
+    # set the defaults
+    #
+    $opt_v = 0;
+    $opt_o = "output.png";
+    $opt_f = "black";
+    $opt_b = "white";
+    $opt_w = undef;
+    $opt_h = 12;
+
+    # parse args
+    #
+    if (!GetOptions(%optctl) || ! defined($ARGV[0])) {
+	die "invalid command line\nusage: $help";
+    }
+    $text = $ARGV[0];
+    if (! defined $opt_w) {
+    	$opt_w = 6 + length($text)*9;
+    }
+
+    # create the image in memory, filled with black pixels
+    #
+    $image = Image::Magick->new(magick=>'PNG', size=>"${opt_w}x${opt_h}");
+    if (! defined $image) {
+	die "failed to generate an PNG ${opt_w}x${opt_h} object";
+    }
+    $ret = $image->Read("xc:$opt_b");
+    if ($ret) {
+	die "image fill from xc:$opt_b failed: $ret";
+    }
+
+    # draw the text into the image
+    #
+    $ret = $image->Annotate(font=>"Helvetica",
+    			    pointsize=>16,
+    			    fill=>$opt_f,
+			    gravity=>"center",
+			    text=>$text);
+    if ($ret) {
+	die "text annotation of image failed: $ret";
+    }
+
+    # write the image
+    #
+    $ret = $image->Write($opt_o);
+    if ($ret) {
+	die "write of image to $opt_o failed: $ret";
+    }
+    exit(0);
+}
