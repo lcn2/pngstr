@@ -4,11 +4,11 @@
 #
 # This example writes the UTC date string in a file called date.png.
 #
-# @(#) $Revision: 1.2 $
-# @(#) $Id: pngstr,v 1.2 2004/02/09 03:08:01 chongo Exp chongo $
+# @(#) $Revision: 1.3 $
+# @(#) $Id: pngstr,v 1.3 2004/05/21 15:29:41 chongo Exp chongo $
 # @(#) $Source: /usr/local/src/cmd/pngstr/RCS/pngstr,v $
 #
-# Copyright (c) 2003 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2003-2006 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -38,17 +38,17 @@ use strict;
 use bytes;
 use Image::Magick;
 use Getopt::Long;
-use vars qw($opt_v $opt_o $opt_f $opt_b $opt_w $opt_h);
+use vars qw($opt_v $opt_o $opt_f $opt_b $opt_w $opt_h $opt_x $opt_y $opt_t);
 
 # version - RCS style *and* usable by MakeMaker
 #
-my $VERSION = substr q$Revision: 1.2 $, 10;
+my $VERSION = substr q$Revision: 1.3 $, 10;
 $VERSION =~ s/\s+$//;
 
 # usage and help
 #
 my $usage = "$0 [-v lvl] [-o output.png] [-fg fg_color] [-b bg_color]\n" .
-	    "\t[-w width] text";
+	    "\t[-w width] [-x adjust_x] [-y adjust_y] text";
 my $help = qq{$usage
 
 	-v lvl		verbose / debug level
@@ -56,7 +56,10 @@ my $help = qq{$usage
 	-f fg_color	foreground / text color (default: black)
 	-b bg_color	background color (default: white)
 	-w width	image width in pixels (default: length(text)*9)
-	-h height	image height in pixels (default: 12)
+	-h height	image height in pixels (default: 16)
+	-t trim_width	reduce the width of the image in pixels (default: 0)
+	-x adjust_x	adjust text position left(>0)/right(<0) (default: 0)
+	-y adjust_y	adjust text position up(>0)/down(<0) (default: -4)
 };
 my %optctl = (
     "v=i" => \$opt_v,
@@ -65,6 +68,9 @@ my %optctl = (
     "b=s" => \$opt_b,
     "w=i" => \$opt_w,
     "h=i" => \$opt_h,
+    "x=i" => \$opt_x,
+    "y=i" => \$opt_y,
+    "t=i" => \$opt_t,
 );
 
 # setup
@@ -86,7 +92,10 @@ MAIN: {
     $opt_f = "black";
     $opt_b = "white";
     $opt_w = undef;
-    $opt_h = 12;
+    $opt_h = 16;
+    $opt_x = 0;
+    $opt_y = -4;
+    $opt_t = 0;
 
     # parse args
     #
@@ -97,6 +106,7 @@ MAIN: {
     if (! defined $opt_w) {
     	$opt_w = length($text)*9;
     }
+    $opt_w -= $opt_t;
 
     # create the image in memory, filled with black pixels
     #
@@ -115,6 +125,8 @@ MAIN: {
     			    pointsize=>16,
     			    fill=>$opt_f,
 			    gravity=>"center",
+			    x=>$opt_x,
+			    y=>$opt_y,
 			    text=>$text);
     if ($ret) {
 	die "text annotation of image failed: $ret";
