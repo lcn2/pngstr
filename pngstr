@@ -4,8 +4,8 @@
 #
 # This example writes the UTC date string in a file called date.png.
 #
-# @(#) $Revision: 1.3 $
-# @(#) $Id: pngstr,v 1.3 2004/05/21 15:29:41 chongo Exp chongo $
+# @(#) $Revision: 1.4 $
+# @(#) $Id: pngstr,v 1.4 2006/06/20 08:10:26 chongo Exp chongo $
 # @(#) $Source: /usr/local/src/cmd/pngstr/RCS/pngstr,v $
 #
 # Copyright (c) 2003-2006 by Landon Curt Noll.  All Rights Reserved.
@@ -42,7 +42,7 @@ use vars qw($opt_v $opt_o $opt_f $opt_b $opt_w $opt_h $opt_x $opt_y $opt_t);
 
 # version - RCS style *and* usable by MakeMaker
 #
-my $VERSION = substr q$Revision: 1.3 $, 10;
+my $VERSION = substr q$Revision: 1.4 $, 10;
 $VERSION =~ s/\s+$//;
 
 # usage and help
@@ -103,10 +103,16 @@ MAIN: {
 	die "invalid command line\nusage: $help";
     }
     $text = $ARGV[0];
+    # remove any trailing newline
+    chomp $text;
+    # compute width
     if (! defined $opt_w) {
     	$opt_w = length($text)*9;
     }
+    # trim if -t was given
     $opt_w -= $opt_t;
+    # not do not trim into nothing
+    $opt_w = 1 if ($opt_w <= 0);
 
     # create the image in memory, filled with black pixels
     #
