@@ -4,8 +4,8 @@
 #
 # This example writes the UTC date string in a file called date.png.
 #
-# @(#) $Revision: 1.7 $
-# @(#) $Id: pngstr,v 1.7 2007/05/18 20:41:08 chongo Exp chongo $
+# @(#) $Revision: 1.8 $
+# @(#) $Id: pngstr,v 1.8 2010/03/04 15:39:13 chongo Exp chongo $
 # @(#) $Source: /usr/local/src/cmd/pngstr/RCS/pngstr,v $
 #
 # Copyright (c) 2003-2006 by Landon Curt Noll.  All Rights Reserved.
@@ -43,7 +43,7 @@ use POSIX qw(uname);
 
 # version - RCS style *and* usable by MakeMaker
 #
-my $VERSION = substr q$Revision: 1.7 $, 10;
+my $VERSION = substr q$Revision: 1.8 $, 10;
 $VERSION =~ s/\s+$//;
 
 # default offset of -4 on Linux, 0 elsewhere
@@ -51,7 +51,7 @@ $VERSION =~ s/\s+$//;
 my $sysname;	# Name of the operating system implementation
 my $def_y = 0;	# default adjust text position up
 ($sysname, undef, undef, undef, undef) = POSIX::uname();
-$def_y = 4 if (defined $sysname && $sysname eq "Linux");
+$def_y = 3 if (defined $sysname && $sysname eq "Linux");
 
 # usage and help
 #
