@@ -3,9 +3,9 @@
 #
 # pngstr - form a PNG image from a string
 #
-# @(#) $Revision$
-# @(#) $Id$
-# @(#) $Source$
+# @(#) $Revision: 1.1 $
+# @(#) $Id: Makefile,v 1.1 2004/01/23 03:12:52 chongo Exp root $
+# @(#) $Source: /usr/local/src/bin/pngstr/RCS/Makefile,v $
 #
 # Copyright (c) 2004 by Landon Curt Noll.  All Rights Reserved.
 #
@@ -36,7 +36,7 @@ SHELL= /bin/sh
 CC= cc
 CFLAGS= -O3 -g3
 
-TOPNAME= cmd
+TOPNAME= bin
 INSTALL= install
 
 DESTDIR= /usr/local/bin
