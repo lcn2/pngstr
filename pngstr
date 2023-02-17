@@ -39,7 +39,7 @@ use POSIX qw(uname);
 
 # version - RCS style *and* usable by MakeMaker
 #
-my $VERSION = substr q$Revision: 1.11 $, 10;
+my $VERSION = substr q$Revision: 1.12 $, 10;
 $VERSION =~ s/\s+$//;
 
 # default offset of 2 on Linux, 0 elsewhere
