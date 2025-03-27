@@ -1,10 +1,8 @@
-#!/usr/bin/env perl -w
+#!/usr/bin/env perl
 #
 # pngstr - turn an string into a PNG image
 #
-# This example writes the UTC date string in a file called date.png.
-#
-# Copyright (c) 2003-2006,2023 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2004,2006,2007,2010,2023,2025 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -33,17 +31,18 @@
 use strict;
 use bytes;
 use Image::Magick;
-use Getopt::Long;
-use vars qw($opt_v $opt_o $opt_f $opt_b $opt_w $opt_h $opt_x $opt_y $opt_t);
+use Getopt::Long qw(:config no_ignore_case);
+use vars qw($opt_h $opt_v $opt_V $opt_o $opt_f $opt_b $opt_W $opt_H $opt_t $opt_x $opt_y);
 use POSIX qw(uname);
+use File::Basename;
 
-# version - RCS style *and* usable by MakeMaker
+# version
 #
-my $VERSION = substr q$Revision: 1.12 $, 10;
-$VERSION =~ s/\s+$//;
+my $VERSION = "1.12.1 2025-03-26";
 
 # default offset of 2 on Linux, 0 elsewhere
 #
+my $NAME = basename($0);
 my $sysname;	# Name of the operating system implementation
 my $def_y = 0;	# default adjust text position up
 ($sysname, undef, undef, undef, undef) = POSIX::uname();
@@ -51,30 +50,36 @@ $def_y = 2 if (defined $sysname && $sysname eq "Linux");
 
 # usage and help
 #
-my $usage = "$0 [-v lvl] [-o output.png] [-fg fg_color] [-b bg_color]\n" .
-	    "\t[-w width] [-x adjust_x] [-y adjust_y] text";
+my $usage = "$NAME [-h] [-v lvl] [-V] [-o output.png] [-fg fg_color] [-b bg_color]\n" .
+	    "\t[-W width] [-H height] [-t trim_width] [-x adjust_x] [-y adjust_y] text";
 my $help = qq{$usage
 
-	-v lvl		verbose / debug level
-	-o output.png	output filename (default: output.png)
-	-f fg_color	foreground / text color (default: black)
-	-b bg_color	background color (default: white)
-	-w width	image width in pixels (default: length(text)*9)
-	-h height	image height in pixels (default: 16)
-	-t trim_width	reduce the width of the image in pixels (default: 0)
-	-x adjust_x	adjust text position left(>0)/right(<0) (default: 0)
-	-y adjust_y	adjust text position up(>0)/down(<0) (default: $def_y)
-};
+    -h              print help and exit
+    -v lvl          verbose / debug level
+    -V              print version and exit
+
+    -o output.png   output filename (default: output.png)
+    -f fg_color     foreground / text color (default: black)
+    -b bg_color     background color (default: white)
+    -W width        image width in pixels (default: length(text)*9)
+    -H height       image height in pixels (default: 16)
+    -t trim_width   reduce the width of the image in pixels (default: 0)
+    -x adjust_x     adjust text position left(>0)/right(<0) (default: 0)
+    -y adjust_y     adjust text position up(>0)/down(<0) (default: $def_y)
+
+$NAME version: $VERSION};
 my %optctl = (
+    "h" => \$opt_h,
     "v=i" => \$opt_v,
+    "V" => \$opt_V,
     "o=s" => \$opt_o,
     "f=s" => \$opt_f,
     "b=s" => \$opt_b,
-    "w=i" => \$opt_w,
-    "h=i" => \$opt_h,
+    "W=i" => \$opt_W,
+    "H=i" => \$opt_H,
+    "t=i" => \$opt_t,
     "x=i" => \$opt_x,
     "y=i" => \$opt_y,
-    "t=i" => \$opt_t,
 );
 
 # setup
@@ -91,20 +96,33 @@ MAIN: {
 
     # set the defaults
     #
+    $opt_h = 0;
     $opt_v = 0;
+    $opt_V = 0;
     $opt_o = "output.png";
     $opt_f = "black";
     $opt_b = "white";
-    $opt_w = undef;
-    $opt_h = 16;
+    $opt_W = undef;
+    $opt_H = 16;
     $opt_x = 0;
     $opt_y = $def_y;
     $opt_t = 0;
 
     # parse args
     #
-    if (!GetOptions(%optctl) || ! defined($ARGV[0])) {
+    if (!GetOptions(%optctl)) {
 	die "invalid command line\nusage: $help";
+    }
+    if ($opt_h) {
+        print "$help\n";
+        exit(0);
+    }
+    if ($opt_V) {
+        print "$VERSION\n";
+        exit(0);
+    }
+    if (! defined($ARGV[0])) {
+	die "missing text arg\nusage: $help";
     }
     $text = $ARGV[0];
 
@@ -113,21 +131,21 @@ MAIN: {
     # remove any trailing newline
     chomp $text;
     # compute width
-    if (! defined $opt_w) {
-    	$opt_w = length($text)*9;
+    if (! defined $opt_W) {
+    	$opt_W = length($text)*9;
     }
     # trim if -t was given
-    $opt_w -= $opt_t;
+    $opt_W -= $opt_t;
     # not do not trim into nothing - to avoid core dumps under FreeBSD
-    $opt_w = 1 if ($opt_w <= 0);
+    $opt_W = 1 if ($opt_W <= 0);
     # do not process an empty string - to avoid core dumps under FreeBSD
     $text = " " if ($text =~ /^$/);
 
     # create the image in memory, filled with black pixels
     #
-    $image = Image::Magick->new(magick=>'PNG', size=>"${opt_w}x${opt_h}");
+    $image = Image::Magick->new(magick=>'PNG', size=>"${opt_W}x${opt_H}");
     if (! defined $image) {
-	die "failed to generate an PNG ${opt_w}x${opt_h} object";
+	die "failed to generate an PNG ${opt_W}x${opt_H} object";
     }
     $ret = $image->Read("xc:$opt_b");
     if ($ret) {
