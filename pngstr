@@ -130,7 +130,7 @@ MAIN: {
     }
     $text = $ARGV[0];
 
-    # pre-process the text string to deterime width and string to parse
+    # pre-process the text string to determine width and string to parse
     #
     # remove any trailing newline
     chomp $text;
