@@ -10,9 +10,20 @@ sudo make install
 ```
 
 
-# To use
+# Examples
 
 ```sh
+$ /usr/local/bin/pngstr -o chongo.png 'chongo was here'
+```
+
+```sh
+$ /usr/local/bin/pngstr -o big-chongo.png -f red -b black -H 32 'chongo was here'
+```
+
+
+# To use
+
+```
 /usr/local/bin/pngstr [-h] [-v lvl] [-V] [-o output.png] [-fg fg_color] [-b bg_color]
 	[-W width] [-H height] [-t trim_width] [-x adjust_x] [-y adjust_y] text
 
@@ -30,17 +41,6 @@ sudo make install
     -y adjust_y     adjust text position up(>0)/down(<0) (default: 0)
 
 pngstr version: 1.12.1 2025-03-26
-```
-
-
-# Examples
-
-```sh
-/usr/local/bin/pngstr -o chongo.png 'chongo was here'
-```
-
-```sh
-/usr/local/bin/pngstr -o big-chongo.png -f red -b black -H 32 'chongo was here'
 ```
 
 
